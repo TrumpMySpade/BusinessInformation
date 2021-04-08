@@ -66,6 +66,7 @@ namespace uiTestingCsharp
             this.q1Answer.Name = "q1Answer";
             this.q1Answer.Size = new System.Drawing.Size(272, 20);
             this.q1Answer.TabIndex = 2;
+            this.q1Answer.TextChanged += new System.EventHandler(this.q1Answer_TextChanged);
             // 
             // q2Answer
             // 
