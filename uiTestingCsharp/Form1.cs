@@ -8,7 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using System;
+using System.Text.RegularExpressions;
 using System.IO;
 
 
@@ -16,11 +16,60 @@ namespace uiTestingCsharp
 {
     public partial class Form1 : Form
     {
+        private void submitInfo(string ans1, string ans2, string ans3, string ans4, string ans5, string ans6)
+        {
+            string line = ans1 + "ʦ" + ans2 + "ʦ" + ans3 + "ʦ" + ans4 + "ʦ" + ans5 + "ʦ" + ans6;
 
+            string docPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+
+            string docName = ans1 + ".txt";
+
+            if (numOfPanelsOpen >= 1)
+            {
+                line = line + "ʦPAN1ʦ¶(" + productAnswer1.Text + "§" + partAnswer1.Text + "§" + quantityAnswer1.Value + "§" + priceAnswer1.Text + ")";
+            }
+            if (numOfPanelsOpen >= 2)
+            {
+                line = line + "ʦPAN2ʦ¶(" + productAnswer2.Text + "§" + partAnswer2.Text + "§" + quantityAnswer2.Value + "§" + priceAnswer2.Text + ")";
+            }
+            if (numOfPanelsOpen >= 3)
+            {
+                line = line + "ʦPAN3ʦ¶(" + productAnswer3.Text + "§" + partAnswer3.Text + "§" + quantityAnswer3.Value + "§" + priceAnswer3.Text + ")";
+            }
+            if (numOfPanelsOpen >= 4)
+            {
+                line = line + "ʦPAN4ʦ¶(" + productAnswer4.Text + "§" + partAnswer4.Text + "§" + quantityAnswer4.Value + "§" + priceAnswer4.Text + ")";
+            }
+            if (numOfPanelsOpen >= 5)
+            {
+                line = line + "ʦPAN5ʦ¶(" + productAnswer5.Text + "§" + partAnswer5.Text + "§" + quantityAnswer5.Value + "§" + priceAnswer5.Text + ")";
+            }
+            if (numOfPanelsOpen >= 6)
+            {
+                line = line + "ʦPAN6ʦ¶(" + productAnswer6.Text + "§" + partAnswer6.Text + "§" + quantityAnswer6.Value + "§" + priceAnswer6.Text + ")";
+            }
+            if (laborAnswer.Text != String.Empty)
+            {
+                line = line + "¤" + laborAnswer.Text;
+                if (laborCostAnswer.Text != String.Empty)
+                {
+                    line = line + "¤" + laborCostAnswer.Text;
+                }
+            }
+
+            using (StreamWriter outputFile = new StreamWriter(Path.Combine(docPath, docName)))
+            {
+                outputFile.WriteLine(line);
+                Console.WriteLine("Written!");
+                info.Text = "Successfully written!";
+            }
+        }
+        
         public Form1()
         {
             InitializeComponent();
         }
+
 
         private void submit_Click(object sender, EventArgs e)
         {
@@ -50,7 +99,6 @@ namespace uiTestingCsharp
                 q6Answer.Text = q6Answer.Text.Replace(" ", String.Empty);
                 char[] az = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz".ToCharArray();
                 char[] numberList = "1234567890".ToCharArray();
-                Console.WriteLine(q6Answer.Text);
                 if (!az.Contains(q6Answer.Text[0]))
                 {
                     Console.WriteLine("1");
@@ -83,18 +131,7 @@ namespace uiTestingCsharp
                 }
                 else
                 {
-                    string line = q1Answer.Text + "ʦ" + q2Answer.Text + "ʦ" + q3Answer.Text + "ʦ" + q4Answer.Text + "ʦ" + q5Answer.Text + "ʦ" + q6Answer.Text;
-
-                    string docPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
-
-                    string docName = q1Answer.Text + ".txt";
-
-                    using (StreamWriter outputFile = new StreamWriter(Path.Combine(docPath, docName)))
-                    {
-                        outputFile.WriteLine(line);
-                        Console.WriteLine("Written!");
-                        info.Text = "Saved Successfully";
-                    }
+                    submitInfo(q1Answer.Text, q2Answer.Text, q3Answer.Text, q4Answer.Text, q5Answer.Text, q6Answer.Text);
                 }
             }
         }
@@ -128,15 +165,214 @@ namespace uiTestingCsharp
                         q3Answer.Text = words[2];
                         q4Answer.Text = words[3];
                         q5Answer.Text = words[4];
-                        q6Answer.Text = words[5];
+                        string postalFixed = words[5].Substring(0, 6);
+                        q6Answer.Text = postalFixed;
+                        string[] fileSplit = fileContent.Split('¶') ;
+                        int elementAmount = fileSplit.Count();
+                        float totalCost = 0;
+                        {
+                            if (elementAmount >= 2) // 1
+                            {
+                                panel1.Visible = true;
+                                string newInfo = fileSplit[1];
+                                newInfo = newInfo.Replace("(", string.Empty);
+                                newInfo = newInfo.Replace(")", string.Empty);
+                                string[] infoSplit = newInfo.Split('§');
+                                productAnswer1.Text = infoSplit[0];
+                                partAnswer1.Text = infoSplit[1];
+                                int quantity = Int32.Parse(infoSplit[2]);
+                                quantityAnswer1.Value = quantity;
+                                string output = Regex.Replace(infoSplit[3], "[^/./,0-9]", "");
+                                priceAnswer1.Text = output;
+                                numOfPanelsOpen = 1;
+                                float priceCost = float.Parse(priceAnswer1.Text);
+                                priceCost = (float)Math.Round(priceCost, 2);
+                                totalCost += priceCost;
+                                priceAnswer1.Text = priceCost.ToString();
+                            }
+                            if (elementAmount >= 3) // 2    
+                            {
+                                panel2.Visible = true;
+                                string newInfo = fileSplit[2];
+                                newInfo = newInfo.Replace("(", string.Empty);
+                                newInfo = newInfo.Replace(")", string.Empty);
+                                string[] infoSplit = newInfo.Split('§');
+                                productAnswer2.Text = infoSplit[0];
+                                partAnswer2.Text = infoSplit[1];
+                                int quantity = Int32.Parse(infoSplit[2]);
+                                quantityAnswer2.Value = quantity;
+                                string output = Regex.Replace(infoSplit[3], "[^/./,0-9]", "");
+                                priceAnswer2.Text = output;
+                                numOfPanelsOpen = 2;
+                                float priceCost = float.Parse(priceAnswer2.Text);
+                                priceCost = (float)Math.Round(priceCost, 2);
+                                totalCost += priceCost;
+                                priceAnswer2.Text = priceCost.ToString();
+                            }
+                            if (elementAmount >= 4) // 3
+                            {
+                                panel3.Visible = true;
+                                string newInfo = fileSplit[3];
+                                newInfo = newInfo.Replace("(", string.Empty);
+                                newInfo = newInfo.Replace(")", string.Empty);
+                                string[] infoSplit = newInfo.Split('§');
+                                productAnswer3.Text = infoSplit[0];
+                                partAnswer3.Text = infoSplit[1];
+                                int quantity = Int32.Parse(infoSplit[2]);
+                                quantityAnswer3.Value = quantity;
+                                string output = Regex.Replace(infoSplit[3], "[^/./,0-9]", "");
+                                priceAnswer3.Text = output;
+                                numOfPanelsOpen = 3;
+                                float priceCost = float.Parse(priceAnswer3.Text);
+                                priceCost = (float)Math.Round(priceCost, 2);
+                                totalCost += priceCost;
+                                priceAnswer3.Text = priceCost.ToString();
+                            }
+                            if (elementAmount >= 5) // 4
+                            {
+                                panel4.Visible = true;
+                                string newInfo = fileSplit[4];
+                                newInfo = newInfo.Replace("(", string.Empty);
+                                newInfo = newInfo.Replace(")", string.Empty);
+                                string[] infoSplit = newInfo.Split('§');
+                                productAnswer4.Text = infoSplit[0];
+                                partAnswer4.Text = infoSplit[1];
+                                int quantity = Int32.Parse(infoSplit[2]);
+                                quantityAnswer4.Value = quantity;
+                                string output = Regex.Replace(infoSplit[3], "[^/./,0-9]", "");
+                                numOfPanelsOpen = 4;
+                                float priceCost = float.Parse(priceAnswer4.Text);
+                                priceCost = (float)Math.Round(priceCost, 2);
+                                totalCost += priceCost;
+                                priceAnswer4.Text = priceCost.ToString();
+                            }
+                            if (elementAmount >= 6) // 5
+                            {
+                                panel5.Visible = true;
+                                string newInfo = fileSplit[5];
+                                newInfo = newInfo.Replace("(", string.Empty);
+                                newInfo = newInfo.Replace(")", string.Empty);
+                                string[] infoSplit = newInfo.Split('§');
+                                productAnswer5.Text = infoSplit[0];
+                                partAnswer5.Text = infoSplit[1];
+                                int quantity = Int32.Parse(infoSplit[2]);
+                                quantityAnswer5.Value = quantity;
+                                string output = Regex.Replace(infoSplit[3], "[^/./,0-9]", "");
+                                numOfPanelsOpen = 5;
+                                float priceCost = float.Parse(priceAnswer5.Text);
+                                priceCost = (float)Math.Round(priceCost, 2);
+                                totalCost += priceCost;
+                                priceAnswer5.Text = priceCost.ToString();
+                            }
+                            if (elementAmount >= 7) // 6
+                            {
+                                panel6.Visible = true;
+                                string newInfo = fileSplit[6];
+                                newInfo = newInfo.Replace("(", string.Empty);
+                                newInfo = newInfo.Replace(")", string.Empty);
+                                string[] infoSplit = newInfo.Split('§');
+                                productAnswer6.Text = infoSplit[0];
+                                partAnswer6.Text = infoSplit[1];
+                                int quantity = Int32.Parse(infoSplit[2]);
+                                quantityAnswer6.Value = quantity;
+                                string output = Regex.Replace(infoSplit[3], "[^/./,0-9]", "");
+                                numOfPanelsOpen = 6;
+                                float priceCost = float.Parse(priceAnswer6.Text);
+                                priceCost = (float)Math.Round(priceCost, 2);
+                                totalCost += priceCost;
+                                priceAnswer6.Text = priceCost.ToString();
+                            }
+                            totalLabel.Text = "Total: " + totalCost;
+                            string[] laborInfoSplit = fileContent.Split('¤');
+                            int laborInfoCount = laborInfoSplit.Count();
+                            Console.WriteLine(laborInfoCount);
+                            if (laborInfoCount >= 1)
+                            {
+                                laborAnswer.Text = laborInfoSplit[1];
+                            }
+                            if (laborInfoCount >= 2) 
+                            {
+                                laborCostAnswer.Text = laborInfoSplit[2];
+                            }
+
+                        }
                     }
                 }
             }
         }
-
-        private void q3Answer_TextChanged(object sender, EventArgs e)
+        int numOfPanelsOpen = 0;
+        private void button1_Click(object sender, EventArgs e)
         {
+            if (numOfPanelsOpen == -1)
+            {
+                numOfPanelsOpen = 0;
+            }
+            if (numOfPanelsOpen == 6)
+            {
+            }
+            if (numOfPanelsOpen != 6)
+            {
+                if (numOfPanelsOpen == 0)
+                {
+                    panel1.Visible = true;
+                }
+                if (numOfPanelsOpen == 1)
+                {
+                    panel2.Visible = true;
+                }
+                if (numOfPanelsOpen == 2)
+                {
+                    panel3.Visible = true;
+                }
+                if (numOfPanelsOpen == 3)
+                {
+                    panel4.Visible = true;
+                }
+                if (numOfPanelsOpen == 4)
+                {
+                    panel5.Visible = true;
+                }
+                if (numOfPanelsOpen == 5)
+                {
+                    panel6.Visible = true;
+                }
+                numOfPanelsOpen = numOfPanelsOpen + 1;
+            }
+        }
 
+        private void button3_Click(object sender, EventArgs e)
+        {
+            if (numOfPanelsOpen == -1)
+            {
+            }
+            if (numOfPanelsOpen != -1)
+            {
+                numOfPanelsOpen = numOfPanelsOpen - 1;
+                if (numOfPanelsOpen == 0)
+                {
+                    panel1.Visible = false;
+                }
+                if (numOfPanelsOpen == 1)
+                {
+                    panel2.Visible = false;
+                }
+                if (numOfPanelsOpen == 2)
+                {
+                    panel3.Visible = false;
+                }
+                if (numOfPanelsOpen == 3)
+                {
+                    panel4.Visible = false;
+                }
+                if (numOfPanelsOpen == 4)
+                {
+                    panel5.Visible = false;
+                }
+                if (numOfPanelsOpen == 5)
+                {
+                    panel6.Visible = false;
+                }
+            }
         }
     }
 }
