@@ -108,7 +108,7 @@ namespace uiTestingCsharp
             this.laborCostAnswer = new System.Windows.Forms.TextBox();
             this.label29 = new System.Windows.Forms.Label();
             this.label30 = new System.Windows.Forms.Label();
-            this.label28 = new System.Windows.Forms.Label();
+            this.laborTotalCost = new System.Windows.Forms.Label();
             this.panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.quantityAnswer1)).BeginInit();
             this.backPanel.SuspendLayout();
@@ -864,22 +864,23 @@ namespace uiTestingCsharp
             this.label30.TabIndex = 29;
             this.label30.Text = "Labor Information";
             // 
-            // label28
+            // laborTotalCost
             // 
-            this.label28.AutoSize = true;
-            this.label28.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label28.Location = new System.Drawing.Point(7, 356);
-            this.label28.Name = "label28";
-            this.label28.Size = new System.Drawing.Size(82, 18);
-            this.label28.TabIndex = 30;
-            this.label28.Text = "Labor Cost";
+            this.laborTotalCost.AutoSize = true;
+            this.laborTotalCost.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.laborTotalCost.Location = new System.Drawing.Point(6, 356);
+            this.laborTotalCost.Name = "laborTotalCost";
+            this.laborTotalCost.Size = new System.Drawing.Size(61, 18);
+            this.laborTotalCost.TabIndex = 30;
+            this.laborTotalCost.Text = "Total : 0";
+            this.laborTotalCost.Click += new System.EventHandler(this.laborTotalCost_Click);
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(757, 457);
-            this.Controls.Add(this.label28);
+            this.Controls.Add(this.laborTotalCost);
             this.Controls.Add(this.label30);
             this.Controls.Add(this.label29);
             this.Controls.Add(this.laborCostAnswer);
@@ -1012,7 +1013,7 @@ namespace uiTestingCsharp
         private System.Windows.Forms.TextBox laborCostAnswer;
         private System.Windows.Forms.Label label29;
         private System.Windows.Forms.Label label30;
-        private System.Windows.Forms.Label label28;
+        private System.Windows.Forms.Label laborTotalCost;
     }
 }
 
